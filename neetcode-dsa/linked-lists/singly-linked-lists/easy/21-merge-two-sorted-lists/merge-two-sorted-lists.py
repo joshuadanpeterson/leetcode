@@ -1,5 +1,21 @@
+from typing import Optional
+
+
+class ListNode:
+    """Class to represent a node in a singly linked list."""
+
+    def __init__(self, val=0, next_node=None):
+        self.val = val
+        self.next = next_node
+
+
 class Solution:
-    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+    """Class to merge two sorted linked lists into one sorted list."""
+
+    def mergeTwoLists(
+        self, list1: Optional[ListNode], list2: Optional[ListNode]
+    ) -> Optional[ListNode]:
+        """Merge two sorted linked lists and return it as a new sorted list."""
         dummy = ListNode()
         tail = dummy
 
@@ -10,11 +26,8 @@ class Solution:
             else:
                 tail.next = list2
                 list2 = list2.next
-            tail = tail.next  # Corrected here, no more `tail.tail`
+            tail = tail.next
 
-        if list1:
-            tail.next = list1
-        elif list2:
-            tail.next = list2
+        tail.next = list1 or list2
 
         return dummy.next
