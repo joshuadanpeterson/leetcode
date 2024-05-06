@@ -15,6 +15,20 @@ class MyLinkedList:
         self.head = None
         self.tail = None
         self.size = 0
+        self.index_map = {}
+        self.indexing_factor = 10  # Adjust based on memory/speed requirements
+
+    def update_index_map(self):
+        if self.size % self.indexing_factor == 0:
+            # Re-index every 10th element only
+            self.index_map = {}
+            current = self.head
+            index = 0
+            while current:
+                if index % self.indexing_factor == 0:
+                    self.index_map[index] = current
+                current = current.next
+                index += 10
 
     def addAtHead(self, val: int) -> None:
         new_node = Node(val, None, self.head)
