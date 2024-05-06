@@ -1,7 +1,10 @@
+# doubly linked list
 class Node:
-    def __init__(self, val=0, next=None):
+    def __init__(self, val=0, prev=None, next=None):
         self.val = val
+        self.prev = prev
         self.next = next
+
 
 class MyLinkedList:
     def __init__(self):
@@ -19,56 +22,65 @@ class MyLinkedList:
         return -1
 
     def addAtHead(self, val: int) -> None:
-        new_node = Node(val, self.head)
+        new_node = Node(val, None, self.head)
+        if self.head:
+            self.head.prev = new_node
         self.head = new_node
-        if not self.tail:  # If the list was empty, now head is also the tail
-            self.tail = self.head
+        if not self.tail:
+            self.tail = new_node
 
     def addAtTail(self, val: int) -> None:
-        new_node = Node(val)
+        new_node = Node(val, self.tail, None)
         if self.tail:
             self.tail.next = new_node
-            self.tail = new_node
-        else:
-            self.head = self.tail = new_node  # List was empty
+        self.tail = new_node
+        if not self.head:
+            self.head = new_node
 
     def addAtIndex(self, index: int, val: int) -> None:
         if index == 0:
             self.addAtHead(val)
             return
-        current = self.head
-        for i in range(index - 1):
-            if not current:
-                return
-            current = current.next
-        if current:
-            new_node = Node(val, current.next)
-            current.next = new_node
-            if new_node.next is None:
-                self.tail = new_node
+        if self.tail:
+            node = self.head
+            for _ in range(index - 1):
+                if node is None:
+                    return
+                node = node.next
+            if node is self.tail:
+                self.addAtTail(val)
+            elif node and node.next:
+                new_node = Node(val, node, node.next)
+                node.next.prev = new_node
+                node.next = new_node
 
     def deleteAtIndex(self, index: int) -> None:
-        if index == 0:
-            if self.head:
+        if index == 0 and self.head:
+            if self.head == self.tail:
+                self.head = self.tail = None
+            else:
                 self.head = self.head.next
-            if not self.head:
-                self.tail = None
+                self.head.prev = None
             return
-        current = self.head
-        for i in range(index - 1):
-            if not current or not current.next:
+        node = self.head
+        for _ in range(index):
+            if node is None:
                 return
-            current = current.next
-        if current.next:
-            if current.next == self.tail:
-                self.tail = current
-            current.next = current.next.next
+            node = node.next
+        if node == self.tail:
+            self.tail = self.tail.prev
+            self.tail.next = None
+        elif node:
+            if node.prev:
+                node.prev.next = node.next
+            if node.next:
+                node.next.prev = node.prev
 
 # Example usage
-# obj = MyLinkedList()
+# obj = MyDoublyLinkedList()
 # obj.addAtHead(1)
 # obj.addAtTail(3)
 # obj.addAtIndex(1, 2)
-# print(obj.get(1)) # Should return 2
+# print(obj.get(1))  # Should return 2
 # obj.deleteAtIndex(1)
-# print(obj.get(1)) # Should return 3
+# print(obj.get(1))  # Should return 3
