@@ -1,13 +1,8 @@
-# doubly linked list with hashmap
-# pylint: disable=too-few-public-methods, invalid-name
-# pylint: disable=missing-module-docstring missing-class-docstring, missing-function-docstring, missing-method-docstring
-
-
 class Node:
-    def __init__(self, val=0, prev=None, next=None):
+    def __init__(self, val=0, next=None, prev=None):
         self.val = val
-        self.prev = prev
         self.next = next
+        self.prev = prev
 
 
 class MyLinkedList:
@@ -15,37 +10,31 @@ class MyLinkedList:
         self.head = None
         self.tail = None
         self.size = 0
-        self.index_map = {}
-        self.indexing_factor = 10  # Adjust based on memory/speed requirements
 
-    def update_index_map(self):
-        if self.size % self.indexing_factor == 0:
-            # Re-index every 10th element only
-            self.index_map = {}
-            current = self.head
-            index = 0
-            while current:
-                if index % self.indexing_factor == 0:
-                    self.index_map[index] = current
-                current = current.next
-                index += 10
+    def get(self, index: int) -> int:
+        if index < 0 or index >= self.size:
+            return -1
+        node = self.head
+        for _ in range(index):
+            node = node.next
+        return node.val if node else -1
 
     def addAtHead(self, val: int) -> None:
-        new_node = Node(val, None, self.head)
+        new_node = Node(val, self.head)
         if self.head:
             self.head.prev = new_node
         self.head = new_node
-        if self.tail is None:
+        if self.size == 0:
             self.tail = new_node
         self.size += 1
 
     def addAtTail(self, val: int) -> None:
-        new_node = Node(val, self.tail, None)
+        new_node = Node(val, None, self.tail)
         if self.tail:
             self.tail.next = new_node
-        self.tail = new_node
-        if self.head is None:
+        else:
             self.head = new_node
+        self.tail = new_node
         self.size += 1
 
     def addAtIndex(self, index: int, val: int) -> None:
@@ -57,25 +46,38 @@ class MyLinkedList:
         if index == self.size:
             self.addAtTail(val)
             return
-        node = self.head
-        for _ in range(index):
-            node = node.next
-        new_node = Node(val, node.prev, node)
-        node.prev.next = new_node
-        node.prev = new_node
-        self.size += 1
 
-    def get(self, index: int) -> int:
-        if index < 0 or index >= self.size:
-            return -1
         node = self.head
-        for _ in range(index):
+        for _ in range(index - 1):
             node = node.next
-        return node.val
+        new_node = Node(val, node.next, node)
+        if node.next:
+            node.next.prev = new_node
+        node.next = new_node
+        if index == self.size:  # Updating the tail if needed
+            self.tail = new_node
+        self.size += 1
 
     def deleteAtIndex(self, index: int) -> None:
         if index < 0 or index >= self.size:
             return
+        if index == 0:
+            if self.head == self.tail:
+                self.head = self.tail = None
+            else:
+                self.head = self.head.next
+                if self.head:
+                    self.head.prev = None
+            self.size -= 1
+            return
+        if index == self.size - 1:
+            if self.tail:
+                self.tail = self.tail.prev
+                if self.tail:
+                    self.tail.next = None
+            self.size -= 1
+            return
+
         node = self.head
         for _ in range(index):
             node = node.next
@@ -83,18 +85,17 @@ class MyLinkedList:
             node.prev.next = node.next
         if node.next:
             node.next.prev = node.prev
-        if node == self.head:
-            self.head = node.next
-        if node == self.tail:
-            self.tail = node.prev
         self.size -= 1
 
 
-# Example usage
-obj = MyLinkedList()
-obj.addAtHead(1)
-obj.addAtTail(3)
-obj.addAtIndex(1, 2)
-print(obj.get(1))  # Output: 2
-obj.deleteAtIndex(1)
-print(obj.get(1))  # Output: 3
+# This ensures the list maintains integrity across various operations and corrects node linking/unlinking.
+
+# Your MyLinkedList object will be instantiated and called as such:
+# obj = MyLinkedList()
+# param_1 = obj.get(index)
+# obj.addAtHead(val)
+# obj.addAtTail(val)
+# obj.addAtIndex(index, val)
+# obj.deleteAtIndex(index)
+
+# obj.deleteAtIndex(index)
