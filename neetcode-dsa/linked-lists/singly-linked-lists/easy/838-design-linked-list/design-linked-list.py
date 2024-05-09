@@ -16,9 +16,15 @@ class MyLinkedList:
     def get(self, index: int) -> int:
         if index < 0 or index >= self.size:
             return -1
-        node = self.head
-        for _ in range(index):
-            node = node.next
+        mid_point = self.size // 2
+        if index <= mid_point:
+            node = self.head
+            for _ in range(index):
+                node = node.next
+        else:
+            node = self.tail
+            for _ in range(self.size - 1, index, -1):
+                node = node.prev
         return node.val if node else -1
 
     def addAtHead(self, val: int) -> None:
