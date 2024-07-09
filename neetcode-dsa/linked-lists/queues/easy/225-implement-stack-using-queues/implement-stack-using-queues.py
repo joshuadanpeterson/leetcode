@@ -1,27 +1,33 @@
 class MyStack:
 
     def __init__(self):
-        self.queue = deque()
+        self.queue1 = deque()
+        self.queue2 = deque()
         
 
     def push(self, x: int) -> None:
-        q = self.queue
-        q.append(x)
-        # Rotate the queue to place the new element at the front
-        for _ in range(len(q) - 1):
-            q.append(q.popleft())
+        # Push element onto queue2
+        self.queue2.append(x)
+        # Push all elements of queue1 to queue2
+        while self.queue1:
+            self.queue2.append(self.queue1.popleft())
+        # Swap the names of queue1 and queue2
+        self.queue1, self.queue2 = self.queue2, self.queue1
         
 
     def pop(self) -> int:
-        return self.queue.popleft()
+        # Pop element from queue1
+        return self.queue1.popleft()
         
 
     def top(self) -> int:
-        return self.queue[0]
+        # Peek the element from queue1
+        return self.queue1[0]
         
 
     def empty(self) -> bool:
-        return not self.queue
+        # Check if queue1 is empty
+        return not self.queue1
         
 
 
