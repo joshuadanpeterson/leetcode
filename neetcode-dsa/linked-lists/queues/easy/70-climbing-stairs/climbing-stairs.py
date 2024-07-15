@@ -1,10 +1,8 @@
 class Solution:
-    def climbStairs(self, n: int, memo=None) -> int:
-        if memo is None:
-            memo = {}
-        if n in memo:
-            return memo[n]
+    def climbStairs(self, n: int) -> int:
         if n <= 1:
             return 1
-        memo[n] = self.climbStairs(n - 1, memo) + self.climbStairs(n - 2, memo)
-        return memo[n]
+        a, b = 1, 1
+        for i in range(2, n + 1):
+            a, b = b, a + b
+        return b
